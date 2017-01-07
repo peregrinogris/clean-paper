@@ -1,0 +1,6 @@
+{
+  "compact": true,
+  "presets": [
+    "es2015",
+  ]
+}
