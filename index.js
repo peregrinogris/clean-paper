@@ -1,8 +1,15 @@
-const http = require('http');
-const connect = require('connect');
 const cheerio = require('cheerio');
+const connect = require('connect');
+const http = require('http');
+const path = require('path');
+const fs = require('fs');
 
 const app = connect();
+let template = '';
+fs.readFile(path.resolve(__dirname, 'template.tpl'), 'utf8', (err, data) => {
+  if (err) throw err; // we'll not consider error handling for now
+  template = data;
+});
 
 const parseArticle = (res, url, images) => {
   http.get({
@@ -64,6 +71,7 @@ const parseArticle = (res, url, images) => {
           $('script').remove();
           $('.sticky-spacer:last-of-type').remove();
           $('.on-demand').remove();
+          $('.mam').remove();
 
 
           if (!images) {
@@ -91,7 +99,7 @@ const parseArticle = (res, url, images) => {
           $('article, h5').removeAttr('class').removeAttr('id');
 
           const content = $('<body>');
-          let title = '';
+          let title = 'Clarin Limpio';
           if ($('.content.home').length > 0) {
             // Home
             const columnistas = $('.mod-columnistas-horizontal')
@@ -104,23 +112,18 @@ const parseArticle = (res, url, images) => {
             $('[id^=sas_]').remove();
             $('.breadcrumb li:first-of-type a').attr('href', '/');
             const outlinks = $('.box-content-new, .content-new').remove();
-            // outlinks.find('span').remove();
+            outlinks.find('span').remove();
 
             content.append($('.nota-unica .title, .nota-unica .notas-content'));
+            content.append($('<h4>Mirá también</h4>'));
             content.append(outlinks);
 
-            title += ` - ${$('title').text()}`;
+            title = $('title').text();
           }
 
-          const head = '<!DOCTYPE html>' +
-                       '<head>' +
-                       '<meta charset="utf-8">' +
-                       `<title>Clarin Limpio${title}</title>` +
-                       '<style>' +
-                       'figure{margin:0;}' +
-                       'img{max-width:100%;}' +
-                       '</style></head>';
-          res.write(head + content.html());
+          const htmlContent = template.replace('{{body}}', content.html())
+                                      .replace('{{title}}', title);
+          res.write(htmlContent);
           res.end();
         });
       });
