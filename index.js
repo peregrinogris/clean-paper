@@ -78,6 +78,13 @@ const parseArticle = (res, url, images) => {
             // Las imágenes suelen venir adentro de un link en los articulos
             $('article > a').remove();
             $('img').remove();
+            $('#galeria-trigger, .image-trigger').remove();
+            // Eliminar todos los embeds que no sean tweets
+            $('[class^=embed-]').each((i, elem) => {
+              if (!$(elem).find('.twitter-tweet').length) {
+                $(elem).remove();
+              }
+            });
           } else {
             $('.img-responsive').each((idx, node) => {
               const elem = $(node);
@@ -91,7 +98,16 @@ const parseArticle = (res, url, images) => {
             });
           }
 
-          // Sacarle las clases a los artículos, que no quieren decir nada
+          // Limpio el markup de los artículos
+          $('article').each((i, elem) => {
+            const title = $(elem).find('.txt a').remove();
+            const image = $(elem).find(images ? 'figure' : '').remove();
+            const text = $(elem).find('p').remove();
+            // El orden siempre va a ser titulo - imagen - bajada
+            $(elem).empty().append(title, image, text);
+          });
+
+          // Sacarle las clases a los artículos y títulos, no quieren decir nada
           $('article, h5').removeAttr('class').removeAttr('id');
 
           const content = $('<body>');
@@ -107,12 +123,40 @@ const parseArticle = (res, url, images) => {
             $('[id^=bannerId_]').remove();
             $('[id^=sas_]').remove();
             $('.breadcrumb li:first-of-type a').attr('href', '/');
-            const outlinks = $('.box-content-new, .content-new').remove();
+
+            // Outlinks
+            const outlinks = $('<div class="outlinks"></div>');
+            outlinks.append($('.box-content-new, .content-new').remove());
             outlinks.find('span').remove();
+            // Heurística, a veces los outlinks estan en medio del txto y tienen
+            // la pinta de "Mirá también: ..."
+            $('a').each((i, elem) => {
+              if ($(elem).text().toLowerCase().indexOf('mir') === 0) {
+                outlinks.append($(elem).remove());
+              }
+            });
 
             content.append($('.nota-unica .title, .nota-unica .notas-content'));
-            content.append($('<h4>Mirá también</h4>'));
-            content.append(outlinks);
+
+            const miraTambien = $('<ul></ul>');
+            outlinks.find('a').each(
+              (i, elem) => {
+                const $elem = $(elem);
+                const link = $('<a></a>').text(
+                  $elem.text().replace(/Mir[áa] (tambi[ée]n: )?/i, '')
+                ).attr(
+                  'href', $elem.attr('href')
+                );
+                miraTambien.append($('<li></li>').append(
+                  link
+                ));
+              }
+            );
+
+            if (miraTambien.find('li').length) {
+              content.append($('<h4>Mirá también</h4>'));
+              content.append(miraTambien);
+            }
 
             title = $('title').text();
           }
