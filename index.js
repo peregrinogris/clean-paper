@@ -134,6 +134,8 @@ const parseArticle = (res, url, images) => {
   });
 };
 
+app.use('/static', express.static(path.join(__dirname, 'public')));
+
 app.use((req, res, next) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
   if (req.url.indexOf('.js') >= 0 || req.url.indexOf('.css') >= 0) {
