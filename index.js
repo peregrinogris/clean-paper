@@ -86,7 +86,7 @@ const parseArticle = (res, url, images) => {
 
             $('article').each((i, elem) => {
               if ($(elem).find('img').length > 0) {
-                $(elem).append($(elem).find('a').first().remove());
+                $(elem).prepend($(elem).find('.txt').first().remove());
               }
             });
           }
