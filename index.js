@@ -89,10 +89,6 @@ const parseArticle = (res, url, images) => {
                 $(elem).append($(elem).find('a').first().remove());
               }
             });
-
-            $('a').each((i, elem) => {
-              $(elem).attr('href', `${$(elem).attr('href')}?img`);
-            });
           }
 
           // Sacarle las clases a los artículos, que no quieren decir nada
