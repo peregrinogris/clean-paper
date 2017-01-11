@@ -1,10 +1,10 @@
 const cheerio = require('cheerio');
-const connect = require('connect');
+const express = require('express');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
 
-const app = connect();
+const app = express();
 let template = '';
 fs.readFile(path.resolve(__dirname, 'template.tpl'), 'utf8', (err, data) => {
   if (err) throw err; // we'll not consider error handling for now
@@ -144,10 +144,15 @@ app.use((req, res, next) => {
   }
 });
 
-app.use((req, res) => {
-  const images = req.url.indexOf('?img') >= 0;
-  const url = (images) ? req.url.replace('?img', '') : req.url;
-  parseArticle(res, url, images);
+app.get('/img*', (req, res) => {
+  parseArticle(res, req.url.substring(4), true);
 });
 
-http.createServer(app).listen(5050);
+app.get('/*', (req, res) => {
+  parseArticle(res, req.url, false);
+});
+
+const PORT = 5050;
+http.createServer(app).listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});

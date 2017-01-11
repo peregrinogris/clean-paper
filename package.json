@@ -18,7 +18,7 @@
   "homepage": "https://github.com/peregrinogris/clean-paper#readme",
   "dependencies": {
     "cheerio": "0.22.0",
-    "connect": "3.5.0"
+    "express": "4.14.0"
   },
   "devDependencies": {
     "babel-eslint": "7.1.1",
