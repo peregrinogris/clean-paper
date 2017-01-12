@@ -3,8 +3,13 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const mcache = require('memory-cache');
 
 const app = express();
+const CACHE_DURATION =  10 * 60; // Seconds
+const CACHE_DURATION_ARTICLE = 30 * 60; // Seconds
+const CACHE_DURATION_ERROR = 60 * 60; // Seconds
+
 let template = '';
 fs.readFile(path.resolve(__dirname, 'template.tpl'), 'utf8', (err, data) => {
   if (err) throw err; // we'll not consider error handling for now
@@ -163,11 +168,17 @@ const parseArticle = (res, url, images) => {
 
           const htmlContent = template.replace('{{body}}', content.html())
                                       .replace('{{title}}', title);
+          mcache.put(
+            url,
+            htmlContent,
+            (url == '/' ? CACHE_DURATION : CACHE_DURATION_ARTICLE) * 1000
+          );
           res.write(htmlContent);
           res.end();
         });
       });
     } else {
+      mcache.put(url, '', CACHE_DURATION_ERROR * 1000);
       res.write('');
       res.end();
     }
@@ -180,6 +191,16 @@ app.use((req, res, next) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
   if (req.url.indexOf('.js') >= 0 || req.url.indexOf('.css') >= 0) {
     res.write('');
+    res.end();
+  } else {
+    next();
+  }
+});
+
+app.use((req, res, next) => {
+  const body = mcache.get(req.url);
+  if (body) {
+    res.write(body);
     res.end();
   } else {
     next();
