@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="/static/css/main.css">
   </head>
   <body>
+    <header>
+      <h1><a href="/">Clean Paper</a></h1>
+      <p>Viernes 13 Enero de 2017 · 14:20 hs</p>
+    </header>
     <div class="container">
       {{body}}
     </div>
