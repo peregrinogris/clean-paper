@@ -4,9 +4,10 @@ const http = require('http');
 const path = require('path');
 const fs = require('fs');
 const mcache = require('memory-cache');
+const moment = require('moment');
 
 const app = express();
-const CACHE_DURATION =  10 * 60; // Seconds
+const CACHE_DURATION = 10 * 60; // Seconds
 const CACHE_DURATION_ARTICLE = 30 * 60; // Seconds
 const CACHE_DURATION_ERROR = 60 * 60; // Seconds
 
@@ -15,6 +16,7 @@ fs.readFile(path.resolve(__dirname, 'template.tpl'), 'utf8', (err, data) => {
   if (err) throw err; // we'll not consider error handling for now
   template = data;
 });
+moment.locale('es');
 
 const parseArticle = (res, url, images) => {
   http.get({
@@ -165,13 +167,18 @@ const parseArticle = (res, url, images) => {
 
             title = $('title').text();
           }
-
+          let date = `${moment().format('dddd DD MMMM')} de `;
+          date += `${moment().format('YYYY')}`;
+          date = `${date[0].toUpperCase()}${date.substr(1)}`;
+          const time = moment().format('HH:mm');
           const htmlContent = template.replace('{{body}}', content.html())
-                                      .replace('{{title}}', title);
+                                      .replace('{{title}}', title)
+                                      .replace('{{date}}', date)
+                                      .replace('{{time}}', time);
           mcache.put(
             url,
             htmlContent,
-            (url == '/' ? CACHE_DURATION : CACHE_DURATION_ARTICLE) * 1000
+            (url === '/' ? CACHE_DURATION : CACHE_DURATION_ARTICLE) * 1000
           );
           res.write(htmlContent);
           res.end();
