@@ -36,8 +36,8 @@ const parseArticle = (res, url, images) => {
         body = body.replace(/"!=""\u00b7trueValue=/g, '')
                    .replace(/\}\}/g, '');
         const $ = cheerio.load(body);
-        const onDemand = [];
 
+        const onDemand = [];
         $('.on-demand').each((i, e) => {
           onDemand.push(new Promise((resolve) => {
             http.get({
@@ -83,7 +83,7 @@ const parseArticle = (res, url, images) => {
 
           if (!images) {
             // Las imágenes suelen venir adentro de un link en los articulos
-            $('article > a').remove();
+            $('article > a').has('img').remove();
             $('img').remove();
             $('#galeria-trigger, .image-trigger').remove();
             // Eliminar todos los embeds que no sean tweets
@@ -107,7 +107,11 @@ const parseArticle = (res, url, images) => {
 
           // Limpio el markup de los artículos
           $('article').each((i, elem) => {
-            const title = $(elem).find('.txt a').remove();
+            let title = $(elem).find('.txt a, .mt a').first().remove();
+            // A veces el link viene fuera de .txt o .mt
+            if (title.length === 0) {
+              title = $(elem).find('a').first().remove();
+            }
             const image = $(elem).find(images ? 'figure' : '').remove();
             const text = $(elem).find('p').remove();
             // El orden siempre va a ser titulo - imagen - bajada
