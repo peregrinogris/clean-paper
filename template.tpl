@@ -7,6 +7,9 @@
     <title>{{title}}</title>
     <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i|Lora:700" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="icon" href="/static/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/static/favicon.png">
+    <link rel="shortcut" href="/favicon.ico" type="image/x-icon">
   </head>
   <body>
     <header>

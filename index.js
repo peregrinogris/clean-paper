@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const express = require('express');
+const favicon = require('serve-favicon');
 const fs = require('fs');
 const http = require('http');
 const mcache = require('memory-cache');
@@ -179,6 +180,7 @@ const parseArticle = (res, url, images) => {
 };
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname + '/public/favicon.ico')));
 
 app.use((req, res, next) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
