@@ -23,25 +23,28 @@ moment.locale('es');
 const parseArticle = (res, url, images) => {
   request(`http://www.clarin.com${url}`, (error, response, body) => {
     if (
-      !error && response.statusCode == 200 &&
+      !error && response.statusCode === 200 &&
       response.headers['content-type'].indexOf('text/html') === 0
     ) {
-      body = body.replace(/"!=""\u00b7trueValue=/g, '')
-                 .replace(/\}\}/g, '');
-      const $ = cheerio.load(body);
+      const $ = cheerio.load(
+        body.replace(/"!=""\u00b7trueValue=/g, '').replace(/\}\}/g, '')
+      );
 
       const onDemand = [];
       $('.on-demand').each((i, e) => {
         onDemand.push(new Promise((resolve) => {
-          request(`http://www.clarin.com${$(e).data('src')}`,
-          (error, response, onDemandBody) => {
-            resolve(
-              JSON.parse(
-                onDemandBody.substr(1, onDemandBody.length - 2)
-              ).data.replace(/"!=""\u00b7trueValue=/g, '')
-                    .replace(/\}\}/g, '')
-            );
-          });
+          request(
+            `http://www.clarin.com${$(e).data('src')}`,
+            (onDemandError, onDemandResponse, onDemandBody) => {
+              resolve(
+                JSON.parse(
+                  onDemandBody.substr(1, onDemandBody.length - 2)
+                ).data.replace(/"!=""\u00b7trueValue=/g, '')
+                      .replace(/\}\}/g, '')
+                      // A veces vienen esos strings en el código...
+              );
+            }
+          );
         }));
       });
 
@@ -180,7 +183,7 @@ const parseArticle = (res, url, images) => {
 };
 
 app.use('/static', express.static(path.join(__dirname, 'public')));
-app.use(favicon(path.join(__dirname + '/public/favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 app.use((req, res, next) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -212,5 +215,6 @@ app.get('/*', (req, res) => {
 
 const PORT = 5050;
 http.createServer(app).listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });
