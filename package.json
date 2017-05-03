@@ -4,7 +4,7 @@
   "description": "A way to better consume news.",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": "nodemon --watch index.js index"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,8 @@
     "memory-cache": "0.1.6",
     "moment": "2.17.1",
     "request": "2.79.0",
-    "serve-favicon": "2.3.2"
+    "serve-favicon": "2.3.2",
+    "nodemon": "1.11.0"
   },
   "devDependencies": {
     "babel-eslint": "7.1.1",

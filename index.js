@@ -122,16 +122,39 @@ const parseArticle = (res, url, images) => {
           $('[id^=bannerId_]').remove();
           $('[id^=sas_]').remove();
           $('.breadcrumb li:first-of-type a').attr('href', '/');
+          $('[itemprop="video"]').remove();
 
           // Outlinks
           const outlinks = $('<div class="outlinks"></div>');
           outlinks.append($('.box-content-new, .content-new').remove());
           outlinks.find('span').remove();
-          // Heurística, a veces los outlinks estan en medio del txto y tienen
-          // la pinta de "Mirá también: ..."
+
+          // Heurísticas:
+          // A veces los outlinks estan en medio del texto y tienen la pinta
+          // de "Mirá también: <noticia>"
           $('a').each((i, elem) => {
             if ($(elem).text().toLowerCase().indexOf('mir') === 0) {
               outlinks.append($(elem).remove());
+            }
+          });
+
+          // Otras veces hay párrafos enteros que sólo son clickbait+link
+          const clickbaits = [
+            'leé',
+            'lee',
+            'te puede interesar',
+            'te puede',
+          ];
+          $('p').each((i, elem) => {
+            const p = $(elem);
+            if (p.find('a').length === 1) {
+              const link = p.find('a').text();
+              const clickbait = p.text()
+                .replace(link, '').trim().toLowerCase();
+              if (clickbaits.indexOf(clickbait) > -1) {
+                outlinks.append(p.find('a').remove());
+                p.remove();
+              }
             }
           });
 
@@ -158,10 +181,11 @@ const parseArticle = (res, url, images) => {
 
           title = $('title').text();
         }
-        let date = `${moment().format('dddd DD MMMM')} de `;
-        date += `${moment().format('YYYY')}`;
+        const timeClarin = moment().utcOffset(-180);
+        let date = `${timeClarin.format('dddd DD MMMM')} de `;
+        date += `${timeClarin.format('YYYY')}`;
         date = `${date[0].toUpperCase()}${date.substr(1)}`;
-        const time = moment().format('HH:mm');
+        const time = timeClarin.format('HH:mm');
         const htmlContent = template.replace('{{body}}', content.html())
                                     .replace('{{title}}', title)
                                     .replace('{{date}}', date)
