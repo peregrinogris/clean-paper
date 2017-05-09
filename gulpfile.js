@@ -1,19 +1,29 @@
 const gulp = require('gulp');
 const del = require('del');
-// const babel = require('gulp-babel');
+const jeditor = require('gulp-json-editor');
 const strip = require('gulp-strip-comments');
 
 gulp.task('build', ['clean'], () => {
-  // Babel
+  // Main
   gulp.src('src/index.js')
-      // .pipe(babel())
       .pipe(strip())
       .pipe(gulp.dest('dist'));
-  // CSS
+  // Public
   gulp.src('public/**/*')
       .pipe(gulp.dest('dist/public'));
   // package.json
   gulp.src('package.json')
+      .pipe(jeditor(json => ({
+        name: json.name,
+        version: json.version,
+        description: json.description,
+        author: json.author,
+        license: json.license,
+        dependencies: json.dependencies,
+        scripts: {
+          start: 'node index',
+        },
+      })))
       .pipe(gulp.dest('dist'));
   // template.tpl
   gulp.src('src/template.tpl')

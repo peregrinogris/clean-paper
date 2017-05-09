@@ -7,8 +7,7 @@
     "start": "nodemon --watch dist dist/index.js",
     "watch": "gulp",
     "dist": "gulp build",
-    "deploy": "npm run dist && now --public -e NODE_ENV='production' dist",
-    "now-start": "node index"
+    "deploy": "npm run dist && now --public -e NODE_ENV='production' dist"
   },
   "repository": {
     "type": "git",
@@ -35,6 +34,7 @@
     "eslint-config-airbnb-base": "11.0.0",
     "eslint-plugin-import": "2.2.0",
     "gulp": "3.9.1",
+    "gulp-json-editor": "2.2.1",
     "gulp-strip-comments": "2.4.5",
     "nodemon": "1.11.0"
   }
