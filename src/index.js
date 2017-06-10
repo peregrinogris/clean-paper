@@ -20,35 +20,30 @@ fs.readFile(path.resolve(__dirname, 'template.tpl'), 'utf8', (err, data) => {
 });
 moment.locale('es');
 
+const getOndemand = ($) => {
+  const onDemand = [];
+  $('.on-demand').each((i, e) => {
+    onDemand.push(new Promise((resolve) => {
+      request(
+        `http://www.clarin.com${$(e).data('src')}`,
+        (onDemandError, onDemandResponse, onDemandBody) => {
+          resolve(JSON.parse(onDemandBody.slice(1, -1)).data);
+        }
+      );
+    }));
+  });
+  return Promise.all(onDemand);
+};
+
 const parseArticle = (res, url, images) => {
   request(`http://www.clarin.com${url}`, (error, response, body) => {
     if (
       !error && response.statusCode === 200 &&
       response.headers['content-type'].indexOf('text/html') === 0
     ) {
-      const $ = cheerio.load(
-        body.replace(/"!=""\u00b7trueValue=/g, '').replace(/\}\}/g, '')
-      );
+      const $ = cheerio.load(body);
 
-      const onDemand = [];
-      $('.on-demand').each((i, e) => {
-        onDemand.push(new Promise((resolve) => {
-          request(
-            `http://www.clarin.com${$(e).data('src')}`,
-            (onDemandError, onDemandResponse, onDemandBody) => {
-              resolve(
-                JSON.parse(
-                  onDemandBody.substr(1, onDemandBody.length - 2)
-                ).data.replace(/"!=""\u00b7trueValue=/g, '')
-                      .replace(/\}\}/g, '')
-                      // A veces vienen esos strings en el código...
-              );
-            }
-          );
-        }));
-      });
-
-      Promise.all(onDemand).then((values) => {
+      getOndemand($).then((values) => {
         values.forEach((onDemandContent) => {
           $('body').append(onDemandContent);
         });
