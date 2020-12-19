@@ -270,7 +270,8 @@ module.exports = (req, res) => {
       images = true;
     }
 
-    if (url.length > 1) {
+    console.log(url);
+    if (url.length > 20) {
       // Es un artículo
       parseArticle(res, url, images);
     } else {
