@@ -2,7 +2,8 @@ const cheerio = require("cheerio");
 const moment = require("moment");
 const axios = require("axios");
 
-const PAPER_URL = "https://www.clarin.com";
+// const PAPER_URL = "https://www.clarin.com";
+const PAPER_URL = "http://localhost:1234";
 
 const MINUTE = 60; // Seconds
 const CACHE_DURATION = 10 * MINUTE;
