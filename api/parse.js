@@ -20,9 +20,9 @@ let template = `
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{title}}</title>
     <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i|Lora:700" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="icon" href="/static/favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="/static/favicon.png">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/favicon.png">
     <link rel="shortcut" href="/favicon.ico" type="image/x-icon">
   </head>
   <body>
@@ -44,6 +44,7 @@ const fetchContent = (url, res) =>
       if (headers["content-type"].indexOf("text/html") !== 0) {
         throw Error();
       }
+
       return data;
     })
     .catch(() => {
@@ -145,7 +146,7 @@ const parseArticle = (res, url, withImages) => {
     `max-age=0, s-maxage=${CACHE_DURATION_ARTICLE}`
   );
 
-  fetchContent(`${PAPER_URL}${url}`, res).then((body) => {
+  fetchContent(`${PAPER_URL}/${url}`, res).then((body) => {
     const $ = cheerio.load(body);
 
     $("header").remove();
@@ -249,9 +250,10 @@ const parseArticle = (res, url, withImages) => {
 };
 
 module.exports = (req, res) => {
+  let url = req.query.url || "/";
+
   res.setHeader("Cache-Control", `max-age=0, s-maxage=${CACHE_DURATION}`);
   res.status(200);
-  let url = req.url;
 
   if (url.indexOf(".js") >= 0 || url.indexOf(".css") >= 0) {
     // No pedir los JS ni CSS externos
@@ -263,9 +265,9 @@ module.exports = (req, res) => {
   } else {
     let images = false;
 
-    if (url.indexOf("/img") === 0) {
+    if (url.indexOf("img") === 0) {
       // Con imágenes
-      url = url.replace("/img", "");
+      url = url.replace(/img\/?/, "");
       images = true;
     }
 

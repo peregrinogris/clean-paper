@@ -3,7 +3,7 @@ const favicon = require("serve-favicon");
 const http = require("http");
 const path = require("path");
 
-const parse = require("../api");
+const parse = require("../api/parse");
 
 const app = express();
 
