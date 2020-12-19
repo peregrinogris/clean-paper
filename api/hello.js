@@ -1,3 +1,3 @@
 module.exports = (req, res) => {
-  res.status(200).send("hello world");
+  res.status(200).send("hello world 2");
 };
