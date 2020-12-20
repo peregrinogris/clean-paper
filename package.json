@@ -1,10 +1,10 @@
 {
   "name": "clean-paper",
   "version": "1.0.0",
-  "description": "Clarín, sin usar todos tus datos.",
+  "description": "Las noticias, sin usar todos tus datos.",
   "main": "src/index.js",
   "scripts": {
-    "start": "nodemon src/index.js --watch src/"
+    "start": "nodemon src/index.js --watch api/ --watch src/"
   },
   "repository": {
     "type": "git",

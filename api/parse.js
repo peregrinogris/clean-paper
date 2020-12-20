@@ -19,7 +19,7 @@ let template = `
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{title}}</title>
-    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i|Lora:700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700|Lora:700" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="icon" href="/favicon.png" type="image/png">
     <link rel="apple-touch-icon" href="/favicon.png">
@@ -181,7 +181,6 @@ const parseArticle = (res, url, withImages) => {
 
     $("[id^=bannerId_]").remove();
     $("[id^=sas_]").remove();
-    $(".breadcrumb li:first-of-type a").attr("href", "/");
     $('[itemprop="video"]').remove();
 
     // Outlinks
@@ -216,16 +215,31 @@ const parseArticle = (res, url, withImages) => {
     const miraTambien = $("<ul></ul>");
     outlinks.find("a").each((i, elem) => {
       const $elem = $(elem);
-      const link = $("<a></a>")
-        .text($elem.text().replace(/Mir[áa] (tambi[ée]n: )?/i, ""))
-        .attr("href", $elem.attr("href"));
-      miraTambien.append($("<li></li>").append(link));
+      if ($elem.text().trim().length > 1) {
+        const link = $("<a></a>")
+          .text($elem.text().replace(/Mir[áa] (tambi[ée]n: )?/i, ""))
+          .attr("href", $elem.attr("href"));
+        miraTambien.append($("<li></li>").append(link));
+      }
     });
 
     if (miraTambien.find("li").length) {
       content.append($("<h4>Mirá también</h4>"));
       content.append(miraTambien);
     }
+
+    const publishedDate = content
+      .find(".breadcrumb .publishedDate")
+      .text()
+      .trim();
+    const modifiedDate = content
+      .find(".breadcrumb .modificatedDate")
+      .text()
+      .trim();
+
+    content
+      .find(".bajada")
+      .append($(`<p>${publishedDate} - ${modifiedDate}</p>`));
 
     // Eliminar cosas de más
     content
@@ -235,10 +249,12 @@ const parseArticle = (res, url, withImages) => {
     title = $("title").text();
 
     const timeClarin = moment().utcOffset(-180);
+
     let date = `${timeClarin.format("dddd DD MMMM")} de `;
     date += `${timeClarin.format("YYYY")}`;
     date = `${date[0].toUpperCase()}${date.substr(1)}`;
     const time = timeClarin.format("HH:mm");
+
     const htmlContent = template
       .replace("{{body}}", content.html())
       .replace("{{title}}", title)

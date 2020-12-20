@@ -1,18 +1,24 @@
 @mixin breakpoint($point) {
   @if $point == extra {
-    @media (min-width: 1142px) { @content; }
-  }
-  @else if $point == large {
-    @media (min-width: 1025px) { @content; }
-  }
-  @else if $point == medium {
-    @media (min-width: 768px) { @content; }
-  }
-  @else if $point == small {
-    @media (min-width: 480px) { @content; }
-  }
-  @else {
-    @media (min-width: $point) { @content; }
+    @media (min-width: 1142px) {
+      @content;
+    }
+  } @else if $point == large {
+    @media (min-width: 1025px) {
+      @content;
+    }
+  } @else if $point == medium {
+    @media (min-width: 768px) {
+      @content;
+    }
+  } @else if $point == small {
+    @media (min-width: 480px) {
+      @content;
+    }
+  } @else {
+    @media (min-width: $point) {
+      @content;
+    }
   }
 }
 
@@ -26,7 +32,6 @@ img {
   text-align: left;
 }
 
-
 /*! HTML5 Boilerplate v5.0 | MIT License | http://h5bp.com/ */
 
 /* Color Swatch
@@ -37,12 +42,12 @@ Gray   | #6b1f0c | rgb(107, 31, 12);
 */
 
 hr {
-    display: block;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #ccc;
-    margin: 1em 0;
-    padding: 0;
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
 }
 
 audio,
@@ -51,16 +56,14 @@ iframe,
 img,
 svg,
 video {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-//font-family: 'Lora', serif;
-//font-family: 'Libre Baskerville', serif;
 body {
-  font-family: 'Libre Baskerville', serif;
+  font-family: "Libre Baskerville", serif;
   font-weight: 400;
   background-color: #eaeaea;
   color: #222;
@@ -70,13 +73,21 @@ body {
     font-size: 1.3em;
   }
 }
-b, strong, i, em {
+b,
+strong {
+  font-weight: 700;
+}
+i,
+em {
   font-weight: 400;
   font-style: italic;
 }
 
-h1, h2, h3, h4 {
-  font-family: 'Lora', serif;
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Lora", serif;
   font-weight: 700;
   line-height: 1.1;
   @include breakpoint(medium) {
@@ -88,17 +99,20 @@ h5 {
   margin-bottom: 0.5em;
   font-size: 1em;
 }
-h2, h3 {
+h2,
+h3 {
   margin: 0 0 0.5em 0;
 }
 p {
   margin: 0 0 1em 0;
 }
 
-a, a:active, a:hover, a:visited {
+a,
+a:active,
+a:hover,
+a:visited {
   color: #6b1f0c;
   text-decoration: none;
-  display: inline-block;
 }
 
 header {
@@ -122,7 +136,8 @@ header {
   }
 }
 
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -139,30 +154,6 @@ html, body {
 .title {
   border-bottom: 1px solid #ccc;
   margin-bottom: 1em;
-  .breadcrumb {
-    font-size: 0.8em;
-    display: inline-block;
-    margin-bottom: 1em;
-    & > span:first-of-type {
-      //float: left;
-    }
-    ul {
-      display: inline-block;
-      margin: 0;
-      padding-left: 0;
-    }
-    li {
-      display: inline-block;
-      line-height: 1.5em;
-      font-weight: 300;
-      font-size: 1em;
-      padding: 5px 0;
-      &:before {
-        content: "|";
-        padding: 0 10px;
-      }
-    }
-  }
   h1 {
     margin-top: 0;
     line-height: 1.2;
@@ -178,6 +169,10 @@ html, body {
 .body-nota {
   div {
     margin-bottom: 1em;
+  }
+  p {
+    text-align: justify;
+    line-height: 2;
   }
 }
 .blockquoteItem {

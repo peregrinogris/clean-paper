@@ -7,10 +7,13 @@ const parse = require("../api/parse");
 
 const app = express();
 
-app.use("/static", express.static(path.join(__dirname, "../public")));
+app.use("/", express.static(path.join(__dirname, "../public")));
 app.use(favicon(path.join(__dirname, "../public", "favicon.ico")));
 
-app.get("/*", parse);
+app.get("*", (req, res) => {
+  req.query.url = req.params[0];
+  parse(req, res);
+});
 
 const PORT = 5050;
 http.createServer(app).listen(PORT, () => {
