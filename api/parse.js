@@ -1,5 +1,5 @@
 const cheerio = require("cheerio");
-const moment = require("moment");
+const moment = require("moment/min/moment-with-locales");
 const axios = require("axios");
 
 const PAPER_URL = "https://www.clarin.com";
