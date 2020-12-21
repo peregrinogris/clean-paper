@@ -226,6 +226,25 @@ const parseArticle = (res, url, withImages) => {
       }
     });
 
+    $("p a").each((i, elem) => {
+      const url = $(elem).attr("href");
+      if (url.indexOf("/tema/") !== -1) {
+        // Esto es más clickbait basicamente
+        $(elem).replaceWith($(elem).text());
+      } else {
+        // Si no es clickbait, hacer los links relativos
+        $(elem).attr(
+          "href",
+          url.replace(/http(s)?:\/\/(www.)?clarin.com/i, "")
+        );
+      }
+    });
+
+    // Reemplazar los mark por strong
+    $("mark").each((i, elem) => {
+      $(elem).replaceWith(`<strong>${$(elem).text()}</strong>`);
+    });
+
     content.append($(".nota-unica .title, .nota-unica .notas-content"));
     const miraTambien = $("<ul></ul>");
     outlinks.find("a").each((i, elem) => {
