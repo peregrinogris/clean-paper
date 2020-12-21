@@ -83,7 +83,10 @@ const parseHome = (res, withImages) => {
       $("footer").remove();
       $("script").remove();
       $(".on-demand").remove();
-      $(".carcasaSkin").remove();
+      $("article.visual").remove();
+
+      // Eliminar clickbait CX Sense
+      $("#containder_cxense").remove(); // Sí, hay un typo en el ID
 
       if (!withImages) {
         $("img").remove();
@@ -94,6 +97,13 @@ const parseHome = (res, withImages) => {
         });
         $("img").removeAttr("alt");
       }
+
+      // Cambiar los swiper slides a articles para En Foco
+      $("#enFoco .swiper-slide").each((i, elem) => {
+        const article = $("<article></article>").html($(elem).html());
+        $(elem).after(article);
+      });
+      $(".swiper-slide").remove();
 
       // Limpio el markup de los artículos
       $("article").each((i, elem) => {
@@ -115,6 +125,11 @@ const parseHome = (res, withImages) => {
 
         // Los articulos de BrandStudio son contenido patrocinado
         if (url.indexOf("brandstudio") !== -1) {
+          $(elem).addClass("ads");
+        }
+
+        // Definición de clickbait
+        if (title.text().indexOf("CLICK") !== -1) {
           $(elem).addClass("ads");
         }
       });
