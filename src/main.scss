@@ -63,7 +63,7 @@ video {
    Author's custom styles
    ========================================================================== */
 body {
-  font-family: "Libre Baskerville", serif;
+  font-family: "Libre Baskerville", ui-serif, serif;
   font-weight: 400;
   background-color: #eaeaea;
   color: #222;
@@ -87,7 +87,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Lora", serif;
+  font-family: "Lora", ui-serif, serif;
   font-weight: 700;
   line-height: 1.1;
   @include breakpoint(medium) {
