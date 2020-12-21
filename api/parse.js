@@ -125,15 +125,20 @@ const parseHome = (res, withImages) => {
 
         // Los articulos de BrandStudio son contenido patrocinado
         if (url.indexOf("brandstudio") !== -1) {
-          $(elem).addClass("ads");
+          $(elem).addClass("remove");
         }
 
         // Definición de clickbait
         if (title.text().indexOf("CLICK") !== -1) {
-          $(elem).addClass("ads");
+          $(elem).addClass("remove");
+        }
+
+        // Sacamos links a Elle
+        if (url.indexOf("elle.") !== -1) {
+          $(elem).addClass("remove");
         }
       });
-      $(".ads").remove();
+      $(".remove").remove();
 
       const content = $("<div>");
       content.append($("article"));
