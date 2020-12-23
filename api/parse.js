@@ -207,7 +207,9 @@ const parseArticle = (res, url, withImages) => {
     if (mvHero) {
       try {
         const script = mvHero.find("script").html();
-        const title = script.replace(/\n/g, "").match(/title: +"([^"]+)",/)[1];
+        const title = script
+          .replace(/\n/g, "")
+          .match(/title: +["']([^"']+)["'],/)[1];
         const divTitle = $("<div></div>")
           .addClass("title")
           .append($(`<h1>${title}</h1>`))
