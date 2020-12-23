@@ -171,7 +171,6 @@ const parseArticle = (res, url, withImages) => {
 
     $("header").remove();
     $("footer").remove();
-    $("script").remove();
 
     if (!withImages) {
       // Las imágenes suelen venir adentro de un link en los articulos
@@ -202,6 +201,22 @@ const parseArticle = (res, url, withImages) => {
     $("[id^=bannerId_]").remove();
     $("[id^=sas_]").remove();
     $('[itemprop="video"]').remove();
+
+    // Parsear mvHero
+    const mvHero = $("#mnhead");
+    if (mvHero) {
+      try {
+        const script = mvHero.find("script").html();
+        const title = script.replace(/\n/g, "").match(/title: +"([^"]+)",/)[1];
+        const divTitle = $("<div></div>")
+          .addClass("title")
+          .append($(`<h1>${title}</h1>`))
+          .append($(".bajada"));
+        $(".nota-unica").prepend(divTitle);
+      } catch (e) {
+        // Ignore error
+      }
+    }
 
     // Outlinks
     const outlinks = $('<div class="outlinks"></div>');
@@ -284,6 +299,7 @@ const parseArticle = (res, url, withImages) => {
     content
       .find(".pull-right, .entry-head, .body-nota > div, #comments")
       .remove();
+    $("script").remove();
 
     title = $("title").text();
 
