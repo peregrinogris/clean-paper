@@ -205,6 +205,8 @@ const parseArticle = (res, url, withImages) => {
 
       $("header").remove();
       $("footer").remove();
+      $(".latest-news").remove();
+      $(".most-viewed").remove();
 
       if (!withImages) {
         // Las imágenes suelen venir adentro de un link en los articulos
