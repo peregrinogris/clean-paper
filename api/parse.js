@@ -291,10 +291,7 @@ const parseArticle = (res, url, withImages) => {
           $(elem).replaceWith($(elem).text());
         } else {
           // Si no es clickbait, hacer los links relativos
-          $(elem).attr(
-            "href",
-            url.replace(/http(s)?:\/\/(www.)?clarin.com/i, "")
-          );
+          $(elem).attr("href", url.replace(/http(s)?:\/\/.+\//i, "/"));
         }
       });
 
@@ -307,10 +304,11 @@ const parseArticle = (res, url, withImages) => {
       const miraTambien = $("<ul></ul>");
       outlinks.find("a").each((i, elem) => {
         const $elem = $(elem);
-        if ($elem.text().trim().length > 1) {
+        const url = $elem.attr("href").replace(/http(s)?:\/\/.+\//i, "/");
+        if ($elem.text().trim().length > 1 && url.indexOf("/tema/") === -1) {
           const link = $("<a></a>")
             .text($elem.text().replace(/Mir[áa] (tambi[ée]n: )?/i, ""))
-            .attr("href", $elem.attr("href"));
+            .attr("href", url);
           miraTambien.append($("<li></li>").append(link));
         }
       });
@@ -335,9 +333,8 @@ const parseArticle = (res, url, withImages) => {
 
       // Eliminar cosas de más
       content
-        .find(".pull-right, .entry-head, .body-nota > div, #comments")
+        .find(".pull-right, .entry-head, .body-nota > div, #comments, script")
         .remove();
-      $("script").remove();
 
       title = $("title").text();
 
