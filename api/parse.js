@@ -262,15 +262,21 @@ const parseArticle = (res, url, withImages) => {
       outlinks.find("span").remove();
 
       // Heurísticas:
-      // A veces los outlinks estan en medio del texto y tienen la pinta
-      // de "Mirá también: <noticia>"
+      // Clickbait en la bajada
+      $(".bajada a").each((i, elem) => {
+        const elemContainer = $(elem).parents("h2");
+        outlinks.append($(elem).remove());
+        elemContainer.remove();
+      });
+
+      // Outlinks estan en medio del texto con la pinta de "Mirá también: <noticia>"
       $("a").each((i, elem) => {
         if ($(elem).text().toLowerCase().indexOf("mir") === 0) {
           outlinks.append($(elem).remove());
         }
       });
 
-      // Otras veces hay párrafos enteros que sólo son clickbait+link
+      // Párrafos enteros que sólo son clickbait+link
       const clickbaits = ["leé", "lee", "te puede interesar", "te puede"];
       $("p").each((i, elem) => {
         const p = $(elem);
