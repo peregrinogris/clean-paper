@@ -302,14 +302,20 @@ const parseArticle = (res, url, withImages) => {
 
       content.append($(".nota-unica .title, .nota-unica .notas-content"));
       const miraTambien = $("<ul></ul>");
+      const addedLinks = [];
       outlinks.find("a").each((i, elem) => {
         const $elem = $(elem);
         const url = $elem.attr("href").replace(/http(s)?:\/\/.+\//i, "/");
-        if ($elem.text().trim().length > 1 && url.indexOf("/tema/") === -1) {
+        if (
+          addedLinks.indexOf(url) === -1 &&
+          url.indexOf("/tema/") === -1 &&
+          $elem.text().trim().length > 1
+        ) {
           const link = $("<a></a>")
             .text($elem.text().replace(/Mir[áa] (tambi[ée]n: )?/i, ""))
             .attr("href", url);
           miraTambien.append($("<li></li>").append(link));
+          addedLinks.push(url);
         }
       });
 
