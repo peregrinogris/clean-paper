@@ -62,23 +62,6 @@ const fetchContent = (url, res) =>
       return Promise.reject();
     });
 
-const getOndemand = ($) => {
-  const onDemand = [];
-  $(".on-demand").each((i, e) => {
-    onDemand.push(
-      axios(`${PAPER_URL}${$(e).data("src")}`).then(
-        // Eliminar los parentesis del "JSON"
-        ({ data }) => JSON.parse(data.slice(1, -1)).data
-      )
-    );
-  });
-  return Promise.all(onDemand).catch((e) => {
-    console.log({ type: "error", module: "onDemand", error: e.message });
-
-    return [];
-  });
-};
-
 const parseHome = (res, withImages) => {
   res.setHeader("Cache-Control", `max-age=0, s-maxage=${CACHE_DURATION}`);
 
@@ -92,89 +75,93 @@ const parseHome = (res, withImages) => {
     .then((body) => {
       const $ = cheerio.load(body);
 
-      return getOndemand($).then((values) => {
-        values.forEach((onDemandContent) => {
-          $("body").append(onDemandContent);
+      // Limpiar el contenido, solo dejar los contenidos validos de content home
+      const homeContent = $(".content.home .container.father");
+      $("body").empty().append(homeContent);
+
+      // Borrar el primer banner de trash
+      $(".container.father").first().remove();
+
+      // Borrar ads
+      $("[data-name=advert]").remove();
+
+      // Borrar artículos de sólo fotos
+      $("article.visual").remove();
+
+      if (!withImages) {
+        $(".wrap-figure, img").remove();
+      } else {
+        $(".img-responsive").each((idx, node) => {
+          const elem = $(node);
+          elem.attr("src", elem.data("srcset"));
         });
+        $("img")
+          .removeAttr("alt")
+          .removeAttr("class")
+          .removeAttr("width")
+          .removeAttr("height")
+          .removeAttr("srcset")
+          .attr("height", "140");
+        $("source").remove();
+      }
 
-        $("header").remove();
-        $("footer").remove();
-        $("script").remove();
-        $(".on-demand").remove();
-        $("article.visual").remove();
+      // Borrar Ultimo Momento
+      $(".last-moment").remove();
 
-        // Eliminar clickbait CX Sense
-        $("#containder_cxense").remove(); // Sí, hay un typo en el ID
+      // Borrar links de contenido relacionado
+      $(".content-related").remove();
 
-        if (!withImages) {
-          $("img").remove();
-        } else {
-          $(".img-responsive").each((idx, node) => {
-            const elem = $(node);
-            elem.attr("src", elem.data("small"));
-          });
-          $("img").removeAttr("alt");
+      // Limpio el markup de los artículos
+      $("article").each((i, elem) => {
+        let volanta = $(elem).find("p.volanta").first().remove();
+        const title = $(elem).find("h1,h2,h3").remove();
+        const url = $(elem).find("a").first().attr("href");
+        const link = $("<a>").append(title).attr("href", url);
+
+        const image = $(elem)
+          .find(withImages ? "picture" : "")
+          .remove();
+
+        const bajada = $(elem).find("p.summary").remove();
+
+        // Si no hay volanta, usamos el autor como volanta
+        if (!volanta.length) {
+          volanta = $(elem).find(".author-name").first().remove();
         }
 
-        // Cambiar los swiper slides a articles para En Foco
-        $("#enFoco .swiper-slide").each((i, elem) => {
-          const article = $("<article></article>").html($(elem).html());
-          $(elem).after(article);
-        });
-        $(".swiper-slide").remove();
+        // El orden siempre va a ser titulo - imagen - bajada
+        $(elem).empty().append(volanta, link, image, bajada);
+        $(elem).removeAttr("style");
+        $(elem).removeAttr("class");
 
-        // Limpio el markup de los artículos
-        $("article").each((i, elem) => {
-          let volanta = $(elem).find("p.volanta").first().remove();
-          const title = $(elem).find("h1,h2,h3").remove();
-          const url = $(elem).find("a").first().attr("href");
-          const link = $("<a>").append(title).attr("href", url);
+        // Los articulos de BrandStudio son contenido patrocinado
+        if (url.indexOf("brandstudio") !== -1) {
+          $(elem).addClass("remove");
+        }
 
-          const image = $(elem)
-            .find(withImages ? "figure" : "")
-            .remove();
-
-          const text = $(elem).find("p.summary").remove();
-
-          // El orden siempre va a ser titulo - imagen - bajada
-          $(elem).empty().append(volanta, link, image, text);
-          $(elem).removeAttr("style");
-          $(elem).removeAttr("class");
-
-          // Los articulos de BrandStudio son contenido patrocinado
-          if (url.indexOf("brandstudio") !== -1) {
-            $(elem).addClass("remove");
-          }
-
-          // Definición de clickbait
-          if (title.text().indexOf("CLICK") !== -1) {
-            $(elem).addClass("remove");
-          }
-
-          // Sacamos links a Elle
-          if (url.indexOf("elle.") !== -1) {
-            $(elem).addClass("remove");
-          }
-        });
-        $(".remove").remove();
-
-        const content = $("<div>");
-        content.append($("article"));
-
-        const timeClarin = moment().utcOffset(-180);
-        let date = `${timeClarin.format("dddd DD MMMM")} de `;
-        date += `${timeClarin.format("YYYY")}`;
-        date = `${date[0].toUpperCase()}${date.substr(1)}`;
-        const time = timeClarin.format("HH:mm");
-
-        const htmlContent = template
-          .replace("{{body}}", content.html())
-          .replace("{{title}}", "Clarin Limpio")
-          .replace("{{date}}", date)
-          .replace("{{time}}", time);
-
-        res.send(htmlContent);
+        // Sacamos links a Elle
+        if (url.indexOf("elle.") !== -1) {
+          $(elem).addClass("remove");
+        }
       });
+      $(".remove").remove();
+
+      const content = $("<div>");
+      content.append($("article"));
+
+      const timeClarin = moment().utcOffset(-180);
+      let date = `${timeClarin.format("dddd DD MMMM")} de `;
+      date += `${timeClarin.format("YYYY")}`;
+      date = `${date[0].toUpperCase()}${date.substr(1)}`;
+      const time = timeClarin.format("HH:mm");
+
+      const htmlContent = template
+        .replace("{{body}}", content.html())
+        .replace("{{title}}", "Clarin Limpio")
+        .replace("{{date}}", date)
+        .replace("{{time}}", time);
+
+      res.send(htmlContent);
     })
     .catch((e) => {
       console.log({
@@ -405,7 +392,7 @@ module.exports = (req, res) => {
     } else {
       let images = false;
 
-      if (url.indexOf("img") === 0) {
+      if (url.indexOf("/img") === 0) {
         // Con imágenes
         url = url.replace(/img\/?/, "");
         images = true;
