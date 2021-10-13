@@ -79,9 +79,6 @@ const parseHome = (res, withImages) => {
       const homeContent = $(".content.home .container.father");
       $("body").empty().append(homeContent);
 
-      // Borrar el primer banner de trash
-      $(".container.father").first().remove();
-
       // Borrar ads
       $("[data-name=advert]").remove();
 
