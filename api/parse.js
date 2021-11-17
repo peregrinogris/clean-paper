@@ -83,7 +83,7 @@ const parseHome = (res, withImages) => {
       $("[data-name=advert]").remove();
 
       // Borrar artículos de sólo fotos
-      $("article.visual").remove();
+      $(".fotonoticia").remove();
 
       if (!withImages) {
         $(".wrap-figure, img").remove();
