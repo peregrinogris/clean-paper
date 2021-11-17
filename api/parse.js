@@ -290,7 +290,7 @@ const parseArticle = (res, url, withImages) => {
         $(elem).replaceWith(`<strong>${$(elem).text()}</strong>`);
       });
 
-      content.append($(".nota-unica .title, .nota-unica .notas-content"));
+      content.append($(".nota-unica .entry-title, .nota-unica .notas-content"));
       const miraTambien = $("<ul></ul>");
       const addedLinks = [];
       outlinks.find("a").each((i, elem) => {
