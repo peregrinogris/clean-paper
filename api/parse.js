@@ -231,7 +231,7 @@ const parseArticle = (res, url, withImages) => {
             .replace(/\n/g, "")
             .match(/title: +["']([^"']+)["'],/)[1];
           const divTitle = $("<div></div>")
-            .addClass("title")
+            .addClass("entry-title")
             .append($(`<h1>${title}</h1>`))
             .append($(".bajada"));
           $(".nota-unica").prepend(divTitle);
